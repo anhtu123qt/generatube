@@ -6,8 +6,14 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import { initFlowbite } from 'flowbite';
+import { onMounted } from 'vue';
 
 const showingNavigationDropdown = ref(false);
+
+onMounted(() => {
+    initFlowbite();
+})
 </script>
 
 <template>
@@ -30,7 +36,7 @@ const showingNavigationDropdown = ref(false);
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                    Home
                                 </NavLink>
                             </div>
                         </div>
