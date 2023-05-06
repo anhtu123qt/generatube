@@ -5,18 +5,6 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-import {
-    initAccordions,
-    initCarousels,
-    initCollapses,
-    initDials,
-    initDismisses,
-    initDrawers,
-    initDropdowns,
-    initModals,
-    initPopovers,
-    initTabs,
-    initTooltips } from 'flowbite';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 

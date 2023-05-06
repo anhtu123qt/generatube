@@ -1,12 +1,41 @@
 <script setup>
+import {ref, reactive} from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head} from '@inertiajs/vue3';
+import axios from 'axios';
+import {BASE_URL} from '@/Modules/baseUrl';
+import {YOUTUBE_STANDARD_VIDEO, convertIdToUrl} from "@/helper";
+
+const url = ref("");
+let videoDetail = reactive({});
+let relatedVideos = reactive({});
+let isShowResult = ref(false);
+
+const onSearchVideo = async (url) => {
+    isShowResult.value = false;
+    const isStandardVideo = url.includes(YOUTUBE_STANDARD_VIDEO);
+    let videoId = isStandardVideo ? new URL(url).searchParams.get('v') : url.slice(url.lastIndexOf('/') + 1);
+    try {
+        await axios.post(BASE_URL.YOUTUBE.SEARCH.ID, {
+            id: videoId,
+            type_search: 'fullURL'
+        })
+            .then((res) => {
+                videoDetail = res.data[0];
+                relatedVideos = res.data.slice(1);
+                isShowResult.value = res.data.length > 0;
+            })
+            .catch((err) => console.log(err))
+
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 </script>
 
 <template>
     <Head title="Home"/>
-
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Home</h2>
@@ -25,10 +54,14 @@ import {Head} from '@inertiajs/vue3';
                                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input type="search" id="search"
+                            <input type="search" id="searchInput"
+                                   v-model="url"
                                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   placeholder="https://www.youtube.com/watch?v=" required>
-                            <button type="submit"
+                                   placeholder="https://www.youtube.com/watch?v="
+                            >
+                            <button type="button"
+                                    id="searchBtn"
+                                    @click="onSearchVideo(url)"
                                     class="text-white absolute right-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                 Search
                             </button>
@@ -38,15 +71,16 @@ import {Head} from '@inertiajs/vue3';
             </div>
         </div>
         <!--END SEARCH-->
-
-        <div class="flex flex-row max-w-7xl mx-auto sm:px-6 lg:px-8 gap-2">
+        <div class="flex flex-row max-w-7xl mx-auto sm:px-6 lg:px-8 gap-2" v-if="isShowResult">
             <!--VIDEO-->
             <div class="basis-2/5">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/UNGi144eVbI"
-                        title="YouTube video player" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen
-                        class="w-full p-4 text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
+                <iframe
+                    width="560" height="315"
+                    :src="`https://www.youtube.com/embed/${videoDetail.id}`"
+                    title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    class="w-full text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
                 ></iframe>
             </div>
             <!--END VIDEO-->
@@ -72,9 +106,14 @@ import {Head} from '@inertiajs/vue3';
                         </li>
                     </ul>
                     <div id="defaultTabContent">
-                        <div class="bg-white rounded-lg md:p-8 dark:bg-gray-800" id="download" role="tabpanel" aria-labelledby="download-tab">
-                            <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Download Video <br> Boost your
-                                skills with ChatGPT: Creating a transcription and translation tool using OpenAI</h5>
+                        <div class="bg-white rounded-lg md:p-8 dark:bg-gray-800" id="download" role="tabpanel"
+                             aria-labelledby="download-tab">
+                            <h5 class="mb-2 text-3xl font-bold text-green-800 dark:text-white">Download Video <br>
+                            </h5>
+                            <h6 class="mb-2 text-3xl font-bold text-gray-600 dark:text-white">
+                                {{ videoDetail.title }}
+                            </h6>
+
 
                             <div class="overflow-x-auto">
                                 <table class="w-full text-md text-left text-gray-500 dark:text-gray-400">
@@ -95,7 +134,7 @@ import {Head} from '@inertiajs/vue3';
                                     <tbody>
                                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <th scope="row"
-                                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            class="px-6 py-4 font-medium text-gray-500 whitespace-nowrap dark:text-white">
                                             1080p (.mp4)
                                         </th>
                                         <td class="px-6 py-4">
@@ -127,8 +166,10 @@ import {Head} from '@inertiajs/vue3';
                                 </table>
                             </div>
                         </div>
-                        <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="transcribe" role="tabpanel" aria-labelledby="transcribe-tab">
-                            <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Transcribe Video <br> Boost your
+                        <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="transcribe"
+                             role="tabpanel" aria-labelledby="transcribe-tab">
+                            <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Transcribe Video <br>
+                                Boost your
                                 skills with ChatGPT: Creating a transcription and translation tool using OpenAI</h5>
                             <button type="button"
                                     class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
@@ -142,25 +183,25 @@ import {Head} from '@inertiajs/vue3';
         </div>
 
         <!--RELATED VIDEOS-->
-        <div class="py-12">
+        <div class="py-12" v-if="isShowResult">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <h5 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Related Videos</h5>
                 <hr class="h-px bg-green-500 border-0 dark:bg-gray-700">
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                    <div>
-                        <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg" alt="">
-                    </div>
-                    <div>
-                        <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg" alt="">
-                    </div>
-                    <div>
-                        <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg" alt="">
-                    </div>
-                    <div>
-                        <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg" alt="">
-                    </div>
-                    <div>
-                        <img class="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-4.jpg" alt="">
+                    <div
+                        v-for="(video, index) in relatedVideos"
+                        class="hover:pointer-events-auto"
+                        @click="onSearchVideo(convertIdToUrl(video.id))"
+                    >
+                        <a href="#">
+                            <img
+                                class="h-auto max-w-full rounded-lg"
+                                :src="video.thumbnail.url"
+                            >
+                            <h6 class="text-lg font-bold dark:text-white hover:text-gray-700">
+                                {{ video.title }}
+                            </h6>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -168,3 +209,5 @@ import {Head} from '@inertiajs/vue3';
         <!--END RELATED VIDEO-->
     </AuthenticatedLayout>
 </template>
+
+
