@@ -132,36 +132,24 @@ const onSearchVideo = async (url) => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                        <th scope="row"
-                                            class="px-6 py-4 font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                                            1080p (.mp4)
-                                        </th>
-                                        <td class="px-6 py-4">
-                                            596.9 MB
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <button type="button"
-                                                    class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                                Download
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                        <th scope="row"
-                                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            720p (.mp4)
-                                        </th>
-                                        <td class="px-6 py-4">
-                                            382.9 MB
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <button type="button"
-                                                    class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                                Download
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        <tr
+                                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                                            v-for="(size, resolution) in videoDetail?.fileSize" key="index"
+                                        >
+                                            <th scope="row"
+                                                class="px-6 py-4 font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                                {{ resolution }} (.mp4)
+                                            </th>
+                                            <td class="px-6 py-4">
+                                                {{ size.size }} MB
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <button type="button"
+                                                        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                                    Download
+                                                </button>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

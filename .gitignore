@@ -20,3 +20,4 @@ yarn-error.log
 /tests
 composer.lock
 package-lock.json
+quick-note.md

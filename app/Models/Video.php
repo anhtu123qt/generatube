@@ -18,4 +18,8 @@ class Video extends Model
 
     CONST YOUTUBE_API_TYPE_SEARCH_VIDEO  = 1;
     CONST YOUTUBE_API_TYPE_SEARCH_RELATED = 2;
+
+    CONST TYPE_VIDEO = 'video';
+    CONST TYPE_AUDIO = 'audio';
+    CONST AUDIO_PRIORITY = 'audioPriority';
 }
